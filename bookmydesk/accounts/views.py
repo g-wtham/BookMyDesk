@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from .forms import SignupForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from .models import scanHistory
+from django.http import JsonResponse
 
 def signup_view(request):
     if request.method == 'POST':
@@ -30,3 +33,14 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     return render(request, template_name="login.html", context= {'login_form': form})
+
+@login_required
+def scan_barcode(request):
+    barcode = request.GET.get("barcode").strip()
+    
+    if scanHistory.objects.filter(barcode_data=barcode).exists():
+        return JsonResponse({"error" : "Already scanned!"})
+    
+    scanHistory.objects.create(user=request.user, barcode_data=barcode)
+    return JsonResponse({"success": "Saved succesfully!!"})
+

@@ -21,6 +21,6 @@ Quagga.init(QuaggaConf, function(e){
 });
 
 Quagga.onDetected(function (result){
-    let barcodeValue = result.codeResult.code;
-    alert(barcodeValue);
+    let barcodeValue = 123;
+    fetch(`/scan/?barcode=${barcodeValue}`).then(response => response.json()).then(data => alert(data.success || data.error)).then(error => console.log("Error", error))
 });
